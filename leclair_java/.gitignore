@@ -1,0 +1,3 @@
+*.json
+*.txt
+!README.txt
