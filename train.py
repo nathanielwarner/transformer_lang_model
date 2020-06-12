@@ -31,15 +31,7 @@ leclair_val = load("leclair_java/val_codes.txt")
 
 print("Creating model...")
 
-vocab_size = tokenizer.vocab_size()
-d_model = 128
-d_ff = 512
-n_layers = 4
-n_heads = 8
-dropout = 0.1
-max_sequence_len = 64
-
-model = TransformerLM(vocab_size, max_sequence_len, d_model, n_heads, d_ff, n_layers, dropout=dropout).to(device)
+model = TransformerLM.from_description("saved_models/alpha/model_description.json").to(device)
 
 criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 optimizer = torch.optim.Adam(model.parameters())
@@ -53,7 +45,7 @@ def batch_dataset(dataset):
     for batch_num in tqdm.trange(num_batches):
         batch = dataset[batch_num * batch_size: batch_num * batch_size + batch_size]
         tokenized_batch = [tokenizer.EncodeAsIds(item) for item in batch]
-        padded_batch = pad_sequences(tokenized_batch, maxlen=max_sequence_len + 1, padding='post', truncating='post',
+        padded_batch = pad_sequences(tokenized_batch, maxlen=model.input_length + 1, padding='post', truncating='post',
                                      value=0, dtype='int64')
         padded_batch = torch.tensor(padded_batch).to(device)
         context = padded_batch[:, :-1]
@@ -74,7 +66,7 @@ def train():
 
         optimizer.zero_grad()
         output = model(context)
-        loss = criterion(output.view(-1, vocab_size), target.flatten())
+        loss = criterion(output.view(-1, model.vocab_size), target.flatten())
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
         optimizer.step()
@@ -95,12 +87,12 @@ def evaluate(data_source):
     with torch.no_grad():
         for context, target in batch_dataset(data_source):
             output = model(context)
-            total_loss += criterion(output.view(-1, vocab_size), target.flatten()).item()
+            total_loss += criterion(output.view(-1, model.vocab_size), target.flatten()).item()
             batch_counter += 1
     return total_loss / batch_counter
 
 
-model_save_path = "trained_model"
+model_save_path = "saved_models/alpha/trained_model"
 
 if os.path.exists(model_save_path):
     print("Loading and evaluating existing model...")

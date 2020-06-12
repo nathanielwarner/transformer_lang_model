@@ -1,6 +1,9 @@
 import math
 import torch
 import torch.nn as nn
+import json
+from keras_preprocessing.sequence import pad_sequences
+import numpy as np
 
 
 def generate_square_subsequent_mask(sz):
@@ -23,6 +26,20 @@ class TransformerLM(nn.Module):
         self.scale_factor = math.sqrt(d_model)
         self.final_layer = nn.Linear(d_model, vocab_size)
         self.vocab_size = vocab_size
+        self.input_length = input_length
+
+    @classmethod
+    def from_description(cls, path):
+        with open(path) as json_file:
+            model_description = json.load(json_file)
+        vocab_size = model_description["vocab_size"]
+        input_length = model_description["input_length"]
+        d_model = model_description["d_model"]
+        n_heads = model_description["n_heads"]
+        d_ff = model_description["d_ff"]
+        n_layers = model_description["n_layers"]
+        dropout = model_description["dropout"]
+        return cls(vocab_size, input_length, d_model, n_heads, d_ff, n_layers, dropout=dropout)
 
     def _init_weights(self):
         for p in self.parameters():
@@ -67,4 +84,24 @@ class CoordinateEmbedding(nn.Module):
         return x
 
 
-
+def predict(prompt, transformer, device, preprocess, tokenizer, max_out_len):
+    prompt = preprocess(prompt)
+    prompt_tok = tokenizer.EncodeAsIds(prompt)
+    len_prompt = len(prompt_tok)
+    prompt_padded = pad_sequences([prompt_tok], maxlen=transformer.input_length, padding='post', truncating='post',
+                                  value=0, dtype='int64')
+    out_toks = []
+    for j in range(max_out_len):
+        out = transformer(torch.tensor(prompt_padded).to(device))[0]
+        working_idx = min(len_prompt - 1 + j, transformer.input_length - 1)
+        new_tok = torch.argmax(out[working_idx]).item()
+        out_toks.append(new_tok)
+        if new_tok == tokenizer.eos_id():
+            break
+        if len_prompt + j < transformer.input_length:
+            prompt_padded[0][len_prompt + j] = new_tok
+        else:
+            prompt_padded = np.roll(prompt_padded, -1, axis=1)
+            prompt_padded[0][-1] = new_tok
+    out_detok = tokenizer.DecodeIds(out_toks)
+    return out_detok
