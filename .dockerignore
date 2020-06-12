@@ -1,0 +1,6 @@
+leclair_java/*.json
+leclair_java/*.txt
+.idea/
+.data/
+venv/
+*.md

@@ -27,7 +27,7 @@ This process is applied repeatedly until the end-of-sentence token is reached,
 or a specified maximum length is surpassed.
 
 ## Running Locally
-You'll need Python 3 with [PyTorch](https://pytorch.org/) and [SentencePiece](https://github.com/google/sentencepiece).
+You'll need Python 3 with `torch`, `sentencepiece`, and `Keras-Preprocessing`.
 Run ``run.py`` with Python to enter an interactive demo.
 
 You can train a new model by editing the parameters in ``train.py``.

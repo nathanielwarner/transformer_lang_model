@@ -96,7 +96,7 @@ model_save_path = "saved_models/alpha/trained_model"
 
 if os.path.exists(model_save_path):
     print("Loading and evaluating existing model...")
-    model.load_state_dict(torch.load(model_save_path))
+    model.load_state_dict(torch.load(model_save_path, map_location=device))
     best_val_loss = evaluate(leclair_val)
     print("Initial validation loss: %.4f" % best_val_loss)
 else:
