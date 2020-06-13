@@ -1,6 +1,8 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import torch
 import sentencepiece as spm
+import json
+
 from transformer_lm import TransformerLM, predict
 import text_data_utils as tdu
 
@@ -21,22 +23,22 @@ PORT = 8001
 
 class CompletionRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
-        if self.headers['Content-type'] == 'text/plain':
+        if self.headers['Content-type'] == 'application/json;charset=utf-8':
             content_length = int(self.headers['Content-length'])
-            body = str(self.rfile.read(content_length))
-            print("Received prompt: %s" % body)
-            completion = predict(body, model, device, tdu.preprocess_csharp_or_java, tokenizer, 250)
+            body = json.loads(self.rfile.read(content_length))
+            print("Received prompt: %s" % body['prompt'])
+            completion = predict(body['prompt'], model, device, tdu.preprocess_csharp_or_java, tokenizer, 250)
             print("Generated completion: %s" % completion)
 
             self.send_response(200)
-            self.send_header('Content-type', 'text/plain')
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(bytes(completion, 'utf-8'))
+            self.wfile.write(bytes(json.dumps({'completion': completion}), 'utf-8'))
         else:
             self.send_response(500)
-            self.send_header('Content-type', 'text/plain')
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(bytes('Expected plain text request', 'utf-8'))
+            self.wfile.write(bytes(json.dumps({'error': 'Expected json request in utf-8'}), 'utf-8'))
 
 
 def main():
