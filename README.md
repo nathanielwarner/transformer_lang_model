@@ -20,7 +20,7 @@ The steps to predict the next token, given an input prompt:
 2. The set of input tokens are processed by an embedding layer, which turns
 them into vectors
 3. A [Transformer Encoder Layer](https://pytorch.org/docs/master/generated/torch.nn.TransformerEncoderLayer.html) 
-is applied *n=8* times
+is applied *n=4* times
 4. Finally, a Dense layer is used to produce next-token probabilities
 
 This process is applied repeatedly until the end-of-sentence token is reached,
