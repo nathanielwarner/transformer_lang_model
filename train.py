@@ -31,7 +31,7 @@ leclair_val = load("leclair_java/val_codes.txt")
 
 print("Creating model...")
 
-model = TransformerLM.from_description("saved_models/alpha/model_description.json").to(device)
+model = TransformerLM.from_description("saved_models/beta/model_description.json").to(device)
 
 criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 optimizer = torch.optim.Adam(model.parameters())
@@ -92,7 +92,7 @@ def evaluate(data_source):
     return total_loss / batch_counter
 
 
-model_save_path = "saved_models/alpha/trained_model"
+model_save_path = "saved_models/beta/trained_model"
 
 if os.path.exists(model_save_path):
     print("Loading and evaluating existing model...")

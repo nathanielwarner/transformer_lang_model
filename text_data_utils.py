@@ -2,7 +2,7 @@ import re
 
 
 def preprocess(x: str, remove_stars=False, remove_java_doc_vars=False, remove_html_tags=False, remove_comments=False,
-               remove_start_and_end_quotes=False, lower=False, to_edinburgh_format=False) -> str:
+               remove_start_and_end_quotes=False, lower=False, to_edinburgh_format=False, remove_whitespace=False) -> str:
     if to_edinburgh_format:
         if x.endswith('\n'):
             x = x[:-len('\n')]
@@ -15,8 +15,9 @@ def preprocess(x: str, remove_stars=False, remove_java_doc_vars=False, remove_ht
         x = re.sub(r'(?<![:\"])(//.*?(?:\n|\\n))', ' ', x)
     if remove_html_tags:
         x = re.sub(r'<.*?>', ' ', x)
-    x = x.replace('\\n', ' ').replace('\n', ' ')
-    x = x.replace('\\t', ' ').replace('\t', ' ')
+    if remove_whitespace:
+        x = x.replace('\\n', ' ').replace('\n', ' ')
+        x = x.replace('\\t', ' ').replace('\t', ' ')
     if remove_stars:
         x = x.replace('/*', ' ').replace('*/', ' ').replace('*', ' ')
     if remove_start_and_end_quotes:

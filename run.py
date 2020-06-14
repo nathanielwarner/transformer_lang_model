@@ -11,8 +11,8 @@ tokenizer.Load("leclair_java/code_spm.model")
 tokenizer.SetEncodeExtraOptions("bos")
 
 print("Loading model...")
-model = TransformerLM.from_description("saved_models/alpha/model_description.json").to(device)
-model.load_state_dict(torch.load("saved_models/alpha/trained_model", map_location=device))
+model = TransformerLM.from_description("saved_models/beta/model_description.json").to(device)
+model.load_state_dict(torch.load("saved_models/beta/trained_model", map_location=device))
 
 
 while True:
