@@ -8,7 +8,7 @@ import text_data_utils as tdu
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 tokenizer = spm.SentencePieceProcessor()
-tokenizer.Load("leclair_java/code_spm.model")
+tokenizer.Load("data/csn_java/code_spm.model")
 tokenizer.SetEncodeExtraOptions("bos")
 
 print("Loading model...")
