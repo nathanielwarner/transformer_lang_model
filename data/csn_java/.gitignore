@@ -1,0 +1,5 @@
+test/
+train/
+valid/
+*.txt
+!README.txt

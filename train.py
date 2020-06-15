@@ -3,7 +3,9 @@ import os
 import torch
 import tqdm
 import sentencepiece as spm
+import random
 from keras_preprocessing.sequence import pad_sequences
+
 from transformer_lm import TransformerLM
 
 
@@ -20,18 +22,18 @@ def load(filename):
 
 
 tokenizer = spm.SentencePieceProcessor()
-tokenizer.Load("leclair_java/code_spm.model")
+tokenizer.Load("data/csn_java/code_spm.model")
 tokenizer.SetEncodeExtraOptions("bos:eos")
 
 
 print("Loading dataset...")
 
-leclair_train = load("leclair_java/train_codes.txt")
-leclair_val = load("leclair_java/val_codes.txt")
+leclair_train = load("data/csn_java/train_codes.txt")
+leclair_val = load("data/csn_java/val_codes.txt")
 
 print("Creating model...")
 
-model = TransformerLM.from_description("saved_models/beta/model_description.json").to(device)
+model = TransformerLM.from_description("saved_models/delta/model_description.json").to(device)
 
 criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 optimizer = torch.optim.Adam(model.parameters())
@@ -39,18 +41,36 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.95)
 
 batch_size = 64
 
+random.seed()
+
+
+def pad_and_split(batch, max_item_len):
+    padded_batch = pad_sequences(batch, maxlen=max_item_len, padding='post', truncating='post',
+                                 value=0, dtype='int64')
+    padded_batch = torch.tensor(padded_batch).to(device)
+    context = padded_batch[:, :-1]
+    target = padded_batch[:, 1:]
+    return context, target
+
 
 def batch_dataset(dataset):
+    random.shuffle(dataset)
     num_batches = (len(dataset) - 1) // batch_size
+    max_item_len = model.input_length + 1
     for batch_num in tqdm.trange(num_batches):
         batch = dataset[batch_num * batch_size: batch_num * batch_size + batch_size]
-        tokenized_batch = [tokenizer.EncodeAsIds(item) for item in batch]
-        padded_batch = pad_sequences(tokenized_batch, maxlen=model.input_length + 1, padding='post', truncating='post',
-                                     value=0, dtype='int64')
-        padded_batch = torch.tensor(padded_batch).to(device)
-        context = padded_batch[:, :-1]
-        target = padded_batch[:, 1:]
-        yield context, target
+        tokenized_batch = []
+        for item in batch:
+            tokenized = tokenizer.SampleEncodeAsIds(item, -1, 0.2)
+            while len(tokenized) > max_item_len:
+                tokenized_batch.append(tokenized[:max_item_len])
+                tokenized = tokenized[max_item_len:]
+            tokenized_batch.append(tokenized)
+        while len(tokenized_batch) > batch_size:
+            real_batch = tokenized_batch[:batch_size]
+            yield pad_and_split(real_batch, max_item_len)
+            tokenized_batch = tokenized_batch[batch_size:]
+        yield pad_and_split(tokenized_batch, max_item_len)
 
 
 def train():
@@ -92,7 +112,7 @@ def evaluate(data_source):
     return total_loss / batch_counter
 
 
-model_save_path = "saved_models/beta/trained_model"
+model_save_path = "saved_models/delta/trained_model"
 
 if os.path.exists(model_save_path):
     print("Loading and evaluating existing model...")
@@ -103,7 +123,7 @@ else:
     print("No existing model, starting training from scratch")
     best_val_loss = float("inf")
 
-epochs = 3
+epochs = 15
 
 for epoch in range(1, epochs + 1):
     print("\nStarting epoch %d of %d" % (epoch, epochs))

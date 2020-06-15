@@ -1,0 +1,5 @@
+Using csn_java for this one, with unigram language model.
+I think it might be a problem for those huge entries to be fully included in the dataset.
+A single batch (might) be almost entirely made up of those split up entries.
+Finished epoch 5 of 15, val loss: 2.6872
+Val loss improved from 2.7059, saving checkpoint

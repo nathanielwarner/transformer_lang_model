@@ -86,7 +86,7 @@ class CoordinateEmbedding(nn.Module):
 
 def predict(prompt, transformer, device, preprocess, tokenizer, max_out_len):
     prompt = preprocess(prompt)
-    prompt_tok = tokenizer.EncodeAsIds(prompt)
+    prompt_tok = tokenizer.SampleEncodeAsIds(prompt, -1, 0.2)
     len_prompt = len(prompt_tok)
     prompt_padded = pad_sequences([prompt_tok], maxlen=transformer.input_length, padding='post', truncating='post',
                                   value=0, dtype='int64')
