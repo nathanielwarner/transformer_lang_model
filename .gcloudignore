@@ -1,0 +1,10 @@
+**/*.txt
+**/*.gz
+**/*.md
+**/*.json
+.idea/
+.data/
+venv/
+__pychache__/
+.git/
+!**/model_description.json
