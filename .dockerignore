@@ -1,6 +1,10 @@
-leclair_java/*.json
-leclair_java/*.txt
+**/*.txt
+**/*.gz
+**/*.md
+**/*.json
 .idea/
 .data/
 venv/
-*.md
+__pychache__/
+.git/
+!**/model_description.json
