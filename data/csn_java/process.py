@@ -33,5 +33,8 @@ extract_codes("train", "train_codes.txt")
 extract_codes("valid", "val_codes.txt")
 extract_codes("test", "test_codes.txt")
 
-spm.SentencePieceTrainer.Train(input="train_codes.txt", model_prefix="code_spm", model_type="unigram", vocab_size=8192,
-                               character_coverage=1.0, user_defined_symbols=["\\n", "\\t"])
+if os.path.isfile("code_spm.model"):
+    print("Skipping creation of SentencePiece model because it already exists")
+else:
+    spm.SentencePieceTrainer.Train(input="train_codes.txt", model_prefix="code_spm", model_type="unigram", vocab_size=8192,
+                                   character_coverage=1.0, user_defined_symbols=["\\n", "\\t"])

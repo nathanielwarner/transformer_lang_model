@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 import torch
 import tqdm
 import sentencepiece as spm
@@ -7,6 +8,12 @@ import random
 from keras_preprocessing.sequence import pad_sequences
 
 from transformer_lm import TransformerLM
+
+if len(sys.argv) != 2:
+    print("Expected 1 argument (path to model)")
+    exit(1)
+
+model_path = os.path.abspath(sys.argv[1])
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,7 +40,7 @@ leclair_val = load("data/csn_java/val_codes.txt")
 
 print("Creating model...")
 
-model = TransformerLM.from_description("saved_models/delta/model_description.json").to(device)
+model = TransformerLM.from_description(os.path.join(model_path, "model_description.json")).to(device)
 
 criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 optimizer = torch.optim.Adam(model.parameters())
@@ -112,7 +119,7 @@ def evaluate(data_source):
     return total_loss / batch_counter
 
 
-model_save_path = "saved_models/delta/trained_model"
+model_save_path = os.path.join(model_path, "trained_model")
 
 if os.path.exists(model_save_path):
     print("Loading and evaluating existing model...")

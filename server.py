@@ -25,7 +25,7 @@ class CompletionRequestHandler(BaseHTTPRequestHandler):
             content_length = int(self.headers['Content-length'])
             body = str(self.rfile.read(content_length))
             print("Received prompt: %s" % body)
-            completion = predict(body, model, device, tdu.preprocess_csharp_or_java, tokenizer, 50)
+            completion = predict(body, model, device, tdu.preprocess_csharp_or_java, tokenizer, 20)
             print("Generated completion: %s" % completion)
 
             self.send_response(200)
