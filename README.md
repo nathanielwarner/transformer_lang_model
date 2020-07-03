@@ -27,6 +27,9 @@ is applied *n=4* times
 This process is applied repeatedly until the end-of-sentence token is reached,
 or a specified maximum length is surpassed.
 
+In contrast to my [Code Summarization Transformer](https://github.com/nathanielwarner/code_summarization_transformer),
+I implemented this project using PyTorch.
+
 ## Running Locally
 You'll need Python 3 with `torch`, `sentencepiece`, and `Keras-Preprocessing`.
 Run ``run.py`` with Python to enter an interactive demo.
