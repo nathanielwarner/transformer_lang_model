@@ -5,6 +5,8 @@ based on the [Universal Transformer](https://arxiv.org/abs/1807.03819)
 architecture, trained on the [CodeSearchNet](https://github.com/github/CodeSearchNet)
 dataset, made up of 454,450 Java methods.
 
+Check out the [live demo](https://nathanielwarner.us/projects/code-completion-demo)!
+
 ## Technical Details
 
 In contrast to the original proposed Transformer, which is made up of a set of
