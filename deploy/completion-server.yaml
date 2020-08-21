@@ -1,0 +1,41 @@
+apiVersion: apps/v1         # Deployment
+kind: Deployment
+metadata:
+  name: completion-server
+  labels:
+    app: completion
+spec:
+  replicas: 1               # ReplicaSet
+  selector:
+    matchLabels:
+      app: completion
+  template:
+    metadata:               # Pod
+      labels:
+        app: completion
+    spec:
+      containers:
+      - name: completion-server-container
+        image: nathaniel515/completion_server:1.0
+        ports:
+        - name: completion-port
+          containerPort: 8000
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "0.2"
+        startupProbe:
+          tcpSocket:
+            port: completion-port
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: completion-port
+          failureThreshold: 1
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: completion-port
+          failureThreshold: 1
+          periodSeconds: 15
