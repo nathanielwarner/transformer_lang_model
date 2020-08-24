@@ -23,7 +23,11 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: "0.1"
+            memory: "250Mi"
+            cpu: "250m"
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
         startupProbe:
           tcpSocket:
             port: completion-port
