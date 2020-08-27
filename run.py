@@ -1,18 +1,28 @@
+import os
+import sys
 import torch
 import sentencepiece as spm
 from transformer_lm import TransformerLM, predict
 import text_data_utils as tdu
 
 
+if len(sys.argv) != 3:
+    print("Expected 2 arguments (path to model, path to dataset)")
+    exit(1)
+
+model_path = os.path.abspath(sys.argv[1])
+dataset_path = os.path.abspath(sys.argv[2])
+
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 tokenizer = spm.SentencePieceProcessor()
-tokenizer.Load("data/csn_java/code_spm.model")
+tokenizer.Load(os.path.join(dataset_path, "code_spm.model"))
 tokenizer.SetEncodeExtraOptions("bos")
 
 print("Loading model...")
-model = TransformerLM.from_description("saved_models/delta/model_description.json").to(device)
-model.load_state_dict(torch.load("saved_models/delta/trained_model", map_location=device))
+model = TransformerLM.from_description(os.path.join(model_path, "model_description.json")).to(device)
+model.load_state_dict(torch.load(os.path.join(model_path, "trained_model"), map_location=device))
 
 
 while True:

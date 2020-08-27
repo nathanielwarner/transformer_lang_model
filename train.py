@@ -9,11 +9,12 @@ from keras_preprocessing.sequence import pad_sequences
 
 from transformer_lm import TransformerLM
 
-if len(sys.argv) != 2:
-    print("Expected 1 argument (path to model)")
+if len(sys.argv) != 3:
+    print("Expected 2 arguments (path to model, path to dataset)")
     exit(1)
 
 model_path = os.path.abspath(sys.argv[1])
+dataset_path = os.path.abspath(sys.argv[2])
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -29,14 +30,14 @@ def load(filename):
 
 
 tokenizer = spm.SentencePieceProcessor()
-tokenizer.Load("data/csn_java/code_spm.model")
+tokenizer.Load(os.path.join(dataset_path, "code_spm.model"))
 tokenizer.SetEncodeExtraOptions("bos:eos")
 
 
 print("Loading dataset...")
 
-leclair_train = load("data/csn_java/train_codes.txt")
-leclair_val = load("data/csn_java/val_codes.txt")
+leclair_train = load(os.path.join(dataset_path, "train_codes.txt"))
+leclair_val = load(os.path.join(dataset_path, "val_codes.txt"))
 
 print("Creating model...")
 
@@ -46,7 +47,7 @@ criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 optimizer = torch.optim.Adam(model.parameters())
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.95)
 
-batch_size = 64
+batch_size = 80
 
 random.seed()
 
@@ -69,14 +70,8 @@ def batch_dataset(dataset):
         tokenized_batch = []
         for item in batch:
             tokenized = tokenizer.SampleEncodeAsIds(item, -1, 0.2)
-            while len(tokenized) > max_item_len:
-                tokenized_batch.append(tokenized[:max_item_len])
-                tokenized = tokenized[max_item_len:]
-            tokenized_batch.append(tokenized)
-        while len(tokenized_batch) > batch_size:
-            real_batch = tokenized_batch[:batch_size]
-            yield pad_and_split(real_batch, max_item_len)
-            tokenized_batch = tokenized_batch[batch_size:]
+            if len(tokenized) <= max_item_len:
+                tokenized_batch.append(tokenized)
         yield pad_and_split(tokenized_batch, max_item_len)
 
 

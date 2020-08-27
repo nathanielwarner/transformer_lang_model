@@ -2,8 +2,8 @@
 
 A proof-of-concept source code completion model,
 based on the [Universal Transformer](https://arxiv.org/abs/1807.03819) 
-architecture, trained on the [CodeSearchNet](https://github.com/github/CodeSearchNet)
-dataset, made up of 454,450 Java methods.
+architecture, trained on the [FunCom](http://leclair.tech/data/funcom/)
+dataset, made up of 2.1 million Java methods.
 
 Check out the [live demo](https://nathanielwarner.net/projects/code-completion-demo)!
 

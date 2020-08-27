@@ -4,4 +4,4 @@ RUN pip install torch==1.6.0+cpu -f https://download.pytorch.org/whl/torch_stabl
 RUN pip install sentencepiece==0.1.91 Keras-Preprocessing==1.1.2 gunicorn==20.0.4
 COPY . .
 EXPOSE 8000
-CMD gunicorn --worker-tmp-dir /dev/shm --workers=2 --threads=4 --worker-class=gthread --log-file=- --bind=0.0.0.0:8000 gunicorn_server:get_completion
+CMD gunicorn --worker-tmp-dir /dev/shm --workers=2 --threads=4 --worker-class=gthread --log-file=- --bind=0.0.0.0:8000 -e MODEL_PATH=saved_models/epsilon -e DATASET_PATH=data/leclair_java gunicorn_server:get_completion
