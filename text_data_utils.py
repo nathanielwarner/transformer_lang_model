@@ -38,7 +38,7 @@ def preprocess(x: str, remove_stars=False, remove_java_doc_vars=False, remove_ht
 
 
 def preprocess_csharp_or_java(x: str) -> str:
-    return preprocess(x, remove_comments=True, remove_start_and_end_quotes=True)
+    return preprocess(x, remove_comments=True, remove_start_and_end_quotes=True, remove_whitespace=True)
 
 
 def preprocess_javadoc(x: str) -> str:

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: completion-server-container
-        image: nathaniel515/completion_server:1.1
+        image: nathaniel515/completion_server:1.2
         ports:
         - name: completion-port
           containerPort: 8000
