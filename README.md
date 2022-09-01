@@ -5,8 +5,6 @@ based on the [Universal Transformer](https://arxiv.org/abs/1807.03819)
 architecture, trained on the [FunCom](http://leclair.tech/data/funcom/)
 dataset, made up of 2.1 million Java methods.
 
-Check out the [live demo](https://nathanielwarner.net/projects/code-completion-demo)!
-
 ## Technical Details
 
 In contrast to the original proposed Transformer, which is made up of a set of
