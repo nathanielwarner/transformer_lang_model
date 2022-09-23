@@ -8,3 +8,4 @@ venv/
 __pychache__/
 .git/
 !**/model_description.json
+!requirements.txt
