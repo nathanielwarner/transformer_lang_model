@@ -1,0 +1,4 @@
+torch~=1.12.1
+sentencepiece~=0.1.97
+gunicorn~=20.1.0
+Keras-Preprocessing~=1.1.2
